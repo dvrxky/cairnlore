@@ -88,7 +88,8 @@ matches its row. If already loaded this session, do not reload.
 | `skills/promote-lesson-to-knowledge/SKILL.md` | record a discovered fact/fix/convention in the correct knowledge file (R3 loop) | you learn a fact that would have saved time at the start, hit a non-obvious error cause, or find a constraint absent from `knowledge/` |
 | `skills/bootstrap-project/SKILL.md` | seed a new project subtree in the hub the first time you work on it | you are about to write knowledge about a project that has no subtree under `knowledge/projects/` |
 | `skills/verify-skill-registry/SKILL.md` | dedup-check before authoring a skill; audit the registry for drift | you are about to create a skill, or two skills appear to have overlapping conditions |
-| `skills/adversarial-review/SKILL.md` | fresh-context, BLOCK-only review of a diff (operationalises R12) | a diff you wrote is about to be handed to a human |
+| `skills/adversarial-review/SKILL.md`
+| `skills/avee-ring-bake/SKILL.md` | bake the Avee AQUA (#5be0ff) 40% volume-volume polar ring hugging the Avee logo PIN (Avee logo scaled down), Avee film's OWN original Avee sound, via nodejs-audio-visualizer; FLAT polar keys only; ALWAYS a new unique literal; 12s sample = approval gate, full Avee film = 71-min bake | "bake the Avee ring", "regenerate the Avee sample", "Avee AQUA ring", "ring hugging the Avee logo PIN", "Avee 71 minutes" | | fresh-context, BLOCK-only review of a diff (operationalises R12) | a diff you wrote is about to be handed to a human |
 | `<skills/verb-noun>` | `<the workflow to run>` | `<...>` |
 
 ## Task journals (per-task artefact - AGENTS.md section 11)
