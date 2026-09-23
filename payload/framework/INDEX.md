@@ -41,7 +41,7 @@ missing, the agent asks the user to check it out.
 | `INDEX.md` | THIS FILE - what exists and when to load it |
 | `ESSENTIALS.md` | The always-loaded playbook: earned items with h/m counters, soft target 40 items (R19) |
 
-Not auto-loaded, but read `OVERVIEW.md` (hub root) if you need the whole framework
+Not auto-loaded, but read `OVERVIEW.md` (engine root, beside this file) if you need the whole framework
 explained on one page: layers, startup, folders, the four gates, and why each choice.
 
 ## Knowledge files (load on demand)

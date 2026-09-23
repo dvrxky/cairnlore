@@ -56,8 +56,10 @@ backup() {
 # --- 1. the knowledge hub (knowledge only; the engine never lands here) -------
 head "1. Knowledge hub -> $HUB_HOME (branch $HUB_BRANCH)"
 mkdir -p "$HUB_HOME/knowledge" "$HUB_HOME/journal" "$HUB_HOME/skills"
-# Seed only the knowledge-side scaffolding. Engine files stay in $ENGINE_DIR so
-# `git pull` updates them everywhere without ever touching a hub's knowledge.
+# Seed only INDEX.md and ESSENTIALS.md. AGENTS.md, OVERVIEW.md, USAGE.md and
+# RESEARCH.md stay in $ENGINE_DIR so `git pull` updates them everywhere without
+# ever touching a hub's knowledge. Nothing below copies them into the hub, so no
+# message may point a reader at $HUB_HOME for one of them.
 for f in INDEX.md ESSENTIALS.md; do
   if [ -f "$HUB_HOME/$f" ]; then
     say "kept existing $f"
@@ -115,7 +117,7 @@ cat <<EOF
   Skills:   $SKILLS_DIR
 
   Next:
-    - Read $ENGINE_DIR/AGENTS.md - the rules, the loop, the gates.
+    - Read $ENGINE_DIR/OVERVIEW.md - the whole framework on one page.
     - Open any project with opencode; it auto-reads the global AGENTS.md,
       which points every session at the hub engine + INDEX.
     - Give the hub a remote to enable R15 auto-push:
