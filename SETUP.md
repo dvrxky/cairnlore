@@ -113,31 +113,56 @@ mkdir -p ~/.config/cairnlore && cat > ~/.config/cairnlore/leak-patterns <<'EOF'
 <team-or-product-name>
 <service-prefix>
 <TICKET-PREFIX>
+<internal-hostname>
 <private-email>
+<your-username>
 EOF
 chmod 600 ~/.config/cairnlore/leak-patterns
 ```
 
-One pattern per line, case-insensitive. This file lives in `~/.config/`, never in a repo.
+One pattern per line, case-insensitive, fed to `git grep -f`. This file lives in
+`~/.config/`, never in a repo.
+
+Include your own username: user-specific absolute paths are the most common accidental
+leak, and they read as harmless while naming your account and your directory layout.
 
 **2. Install the hook that reads it**
 
 ```bash
 cat > <repo>/.git/hooks/pre-push <<'HOOK'
 #!/usr/bin/env bash
-P=~/.config/cairnlore/leak-patterns
-[ -f "$P" ] || exit 0
-if git grep -nIif "$P" -- . >/dev/null 2>&1; then
-  echo "pre-push blocked: private identifier found in a tracked file"
-  git grep -nIif "$P" -- .
+set -uo pipefail
+P="$HOME/.config/cairnlore/leak-patterns"
+
+if [ ! -s "$P" ]; then
+  echo "pre-push BLOCKED: $P is missing or empty."
+  echo "The hook cannot check anything without it. Create it, or remove this hook on purpose."
+  exit 1
+fi
+
+if git grep -nIif "$P" -- . ; then
+  echo "pre-push BLOCKED: the strings above are in tracked files."
   exit 1
 fi
 HOOK
 chmod +x <repo>/.git/hooks/pre-push
 ```
 
+The missing-file case must EXIT 1, not 0. A hook that passes when its pattern list is
+absent reports success while checking nothing, and an installed hook is read as proof the
+repo is guarded. Fail closed: no list, no push.
+
 `.git/hooks/` is never pushed, so the hook stays local by design. Install it in every repo
-you publish from.
+you publish from, and verify it actually fires:
+
+```bash
+cd <repo>
+git grep -nIif ~/.config/cairnlore/leak-patterns -- .   # expect: no output
+.git/hooks/pre-push < /dev/null ; echo "exit=$?"        # expect: exit=0
+```
+
+An `exit=1` with a missing-file message means the list is not there yet. That is the hook
+working, not failing.
 
 **3. Check history too, once**
 
