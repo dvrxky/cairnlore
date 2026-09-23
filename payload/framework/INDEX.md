@@ -71,6 +71,10 @@ matches its row. If already loaded this session, do not reload.
 > discovery picks it up. `skills/_template/SKILL.md` is the authoring template and is
 > never loaded as a workflow.
 
+> This table is the ENGINE's own registry. A skill you author for a project belongs in
+> your hub's `INDEX.md`, not here. Only a skill that works for any project, on any
+> machine, is an engine skill.
+
 > **The user never names a skill.** The FIRES WHEN column is a condition the agent
 > evaluates itself (AGENTS.md R21, R22, section 13). When it holds, run the skill in the
 > same turn, unasked.
@@ -89,7 +93,6 @@ matches its row. If already loaded this session, do not reload.
 | `skills/bootstrap-project/SKILL.md` | seed a new project subtree in the hub the first time you work on it | you are about to write knowledge about a project that has no subtree under `knowledge/projects/` |
 | `skills/verify-skill-registry/SKILL.md` | dedup-check before authoring a skill; audit the registry for drift | you are about to create a skill, or two skills appear to have overlapping conditions |
 | `skills/adversarial-review/SKILL.md` | fresh-context, BLOCK-only review of a diff (operationalises R12) | a diff you wrote is about to be handed to a human |
-| `<skills/verb-noun>` | `<the workflow to run>` | `<...>` |
 
 ## Task journals (per-task artefact - AGENTS.md section 11)
 

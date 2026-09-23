@@ -11,7 +11,16 @@ description: Audit the hub's skills for duplicates, registry drift, and malforme
 > this is `git log` on `HUB_BRANCH` (see section C).
 
 - **triggers:** "add a skill", "new skill", "audit the skills", "check for duplicate skills", "is there a skill for", "verify the skill registry", "which skills exist"
-- **preconditions:** run from `HUB_ROOT` (the dir holding `INDEX.md`, `README.md`, `skills/`)
+- **preconditions:** run from `HUB_ROOT`, and prove it first. The engine's
+  `payload/framework/` also holds `INDEX.md`, `README.md` and `skills/`, so that shape
+  identifies nothing. A hub is the directory with `INDEX.md` and no `AGENTS.md`: the
+  installer seeds a hub with `INDEX.md` and `ESSENTIALS.md` only, while `AGENTS.md`,
+  `OVERVIEW.md`, `USAGE.md` and `RESEARCH.md` never leave the engine.
+
+  ```bash
+  [ -f INDEX.md ] && [ -d skills ] || { echo "not a hub root: $PWD"; exit 1; }
+  [ -f AGENTS.md ] && { echo "this is the ENGINE, not a hub: $PWD"; exit 1; }
+  ```
 
 ## Steps
 

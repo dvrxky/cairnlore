@@ -348,7 +348,9 @@ more than a couple of steps, or must run the same way every time.
 1. **Search first (R4).** Scan `skills/` and `INDEX.md` for an existing skill that
    already covers this workflow. If found, append/refine it. Never create a second
    folder for the same workflow.
-2. Create `skills/<verb-noun>/SKILL.md` (see `skills/_template/SKILL.md`).
+2. Create `$HUB_ROOT/skills/<verb-noun>/SKILL.md`, copying
+   `$CAIRNLORE_ENGINE/skills/_template/SKILL.md`. Write to the hub, never beside the
+   template: the template lives in the engine, and a relative `skills/` resolves there.
 3. Fill: `name`, `description` (this is what the agent matches on), `triggers`,
    `preconditions`, numbered `steps`, `validation`, `example prompts`. Keep steps concrete
    and idempotent. Cite `path:line` for anything code-specific.

@@ -6,7 +6,8 @@ description: <One or two sentences describing when opencode should load this ski
 # Skill: <Verb Noun>
 
 > A skill is a named, repeatable workflow the agent runs on request. Copy this template
-> folder to `skills/<verb-noun>/`, rename to `SKILL.md`, fill every field, and register it
+> folder to `$HUB_ROOT/skills/<verb-noun>/` (the hub, NOT the engine directory this
+> template sits in), rename to `SKILL.md`, fill every field, and register it
 > in `INDEX.md` (skills table). See AGENTS.md section 8 for the build rules.
 
 - **triggers:** `<phrases / keywords that should load and run this, e.g. "release notes", "cut a release">`
