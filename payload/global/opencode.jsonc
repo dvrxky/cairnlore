@@ -1,0 +1,8 @@
+{
+  "$schema": "https://opencode.ai/config.json"
+
+  // Instructions are intentionally NOT wired here.
+  // opencode ALWAYS-loads every file listed in "instructions", which would defeat the
+  // lazy-loading design. AGENTS.md (auto-loaded) references rules/ and memory/ via @paths
+  // that are Read on-demand only when a task matches their trigger. Keep it that way.
+}

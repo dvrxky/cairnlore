@@ -1,0 +1,160 @@
+# SETUP.md - get Cairnlore running on a machine, in order
+
+Two repositories, one direction of flow. The engine flows down into every machine.
+Knowledge never flows up.
+
+```
+cairnlore      PUBLIC    the engine: rules, skills, templates, installer
+<your hub>     PRIVATE   your knowledge, journals, stones
+```
+
+You can have as many hubs as you keep separate bodies of knowledge. The engine is the
+same everywhere; each hub is its own private repo and never merges with another.
+
+---
+
+## A. First machine
+
+**1. Publish the engine**
+
+```bash
+gh repo create cairnlore --public --source ~/git/cairnlore --push
+```
+
+**2. Create a hub**
+
+```bash
+gh repo create cairnlore-hub --private --clone
+cd cairnlore-hub && mkdir -p knowledge journal && git commit --allow-empty -m "init" && git push
+```
+
+**3. Install**
+
+```bash
+git clone https://github.com/<you>/cairnlore.git ~/.cairnlore
+CAIRNLORE_HOME=~/cairnlore-hub bash ~/.cairnlore/install.sh
+```
+
+Done. The engine is at `~/.cairnlore`, your knowledge is in `~/cairnlore-hub`, and the global
+rules at `~/.config/opencode/AGENTS.md` point at both.
+
+---
+
+## B. Any further machine
+
+**1. Install the engine, pull-only**
+
+```bash
+git clone https://github.com/<you>/cairnlore.git ~/.cairnlore
+git -C ~/.cairnlore remote set-url --push origin DISABLED
+```
+
+Set the push URL to an invalid value on every machine you do not publish the engine from.
+A push then fails at the git layer, so the boundary does not depend on anyone remembering
+it.
+
+**2. Point the engine at that machine's hub**
+
+```bash
+CAIRNLORE_HOME=<path to the hub> bash ~/.cairnlore/install.sh
+```
+
+The installer never overwrites a hub that already has an `AGENTS.md`. It updates the
+engine files and leaves all existing knowledge untouched.
+
+---
+
+## C. Everyday use
+
+**Update the engine, any machine:**
+
+```bash
+git -C ~/.cairnlore pull
+```
+
+**Change the engine:** only where you publish from. Edit, commit, push. Every other
+machine picks it up on the next pull.
+
+**Improve the engine from a pull-only machine:** you cannot commit it there. The
+`capture-upstream` skill fires on its own and prints a scrubbed, paste-ready block. Paste
+that into a session on the publishing machine, which applies and pushes it.
+
+---
+
+## D. What goes where
+
+| You learned | It goes |
+|---|---|
+| A rule, skill, or workflow should change | the engine, via `capture-upstream` if you are on a pull-only machine |
+| A fact about a private system | that machine's hub, never upstream |
+| A fact about a personal project | `cairnlore-hub` |
+| A one-off with no reusable lesson | the task journal, nothing more |
+
+The test: if you cannot state the lesson without naming a specific system, it is
+knowledge, not engine. Keep it in the hub.
+
+---
+
+## E. Keeping the public repo clean
+
+The engine repo is public. It must never contain private names, service or host
+identifiers, ticket prefixes, internal URLs, or user-specific paths.
+
+**Never put those strings in a tracked file, including this one.** Writing them into the
+repo to configure a check would publish the exact things the check exists to block. Keep
+them in two places git cannot reach: a config file outside every repo, and the local
+hooks directory.
+
+**1. List your private identifiers outside the repo**
+
+```bash
+mkdir -p ~/.config/cairnlore && cat > ~/.config/cairnlore/leak-patterns <<'EOF'
+<organisation-name>
+<team-or-product-name>
+<service-prefix>
+<TICKET-PREFIX>
+<private-email>
+EOF
+chmod 600 ~/.config/cairnlore/leak-patterns
+```
+
+One pattern per line, case-insensitive. This file lives in `~/.config/`, never in a repo.
+
+**2. Install the hook that reads it**
+
+```bash
+cat > <repo>/.git/hooks/pre-push <<'HOOK'
+#!/usr/bin/env bash
+P=~/.config/cairnlore/leak-patterns
+[ -f "$P" ] || exit 0
+if git grep -nIif "$P" -- . >/dev/null 2>&1; then
+  echo "pre-push blocked: private identifier found in a tracked file"
+  git grep -nIif "$P" -- .
+  exit 1
+fi
+HOOK
+chmod +x <repo>/.git/hooks/pre-push
+```
+
+`.git/hooks/` is never pushed, so the hook stays local by design. Install it in every repo
+you publish from.
+
+**3. Check history too, once**
+
+A hook only guards future pushes. If a repo ever held a private string in an earlier
+commit, rewriting the working tree does not remove it from history. The reliable fix for a
+small repo is to delete `.git`, re-initialise, and make one clean commit.
+
+---
+
+## F. Verify it worked
+
+```bash
+ls ~/.cairnlore/payload/framework/AGENTS.md      # engine present
+ls <hub>/ESSENTIALS.md                       # playbook installed
+git -C ~/.cairnlore push 2>&1 | head -1          # pull-only machine: must fail
+```
+
+Then start a session and ask for anything. The first line back should name a lane, for
+example `Lane: ANSWER.` If it opens with a paragraph of preamble instead, the global
+rules did not load.
