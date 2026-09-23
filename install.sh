@@ -22,7 +22,11 @@ PKG_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # support `curl ... | bash`: fetch the package if the payload is not beside this script
 if [ ! -d "$PKG_DIR/payload" ] && command -v git >/dev/null 2>&1; then
   PKG_DIR="$(mktemp -d)/cairnlore"
-  git clone --depth 1 "${CAIRNLORE_REPO:-https://github.com/USER/cairnlore.git}" "$PKG_DIR" >/dev/null 2>&1
+  REPO="${CAIRNLORE_REPO:-https://github.com/dvrxky/cairnlore.git}"
+  git clone --depth 1 "$REPO" "$PKG_DIR" || {
+    echo "install: cannot clone $REPO. Set CAIRNLORE_REPO to your fork." >&2
+    exit 1
+  }
 fi
 PAYLOAD="$PKG_DIR/payload"
 TS="$(date +%Y%m%d-%H%M%S)"
@@ -52,9 +56,8 @@ backup() {
 # --- 1. the knowledge hub (knowledge only; the engine never lands here) -------
 head "1. Knowledge hub -> $HUB_HOME (branch $HUB_BRANCH)"
 mkdir -p "$HUB_HOME/knowledge" "$HUB_HOME/journal" "$HUB_HOME/skills"
-# Seed only the knowledge-side scaffolding. Engine files (AGENTS.md, USAGE.md,
-# OVERVIEW.md, RESEARCH.md, framework/) stay in $ENGINE_DIR so `git pull` updates them
-# everywhere without ever touching a hub's knowledge.
+# Seed only the knowledge-side scaffolding. Engine files stay in $ENGINE_DIR so
+# `git pull` updates them everywhere without ever touching a hub's knowledge.
 for f in INDEX.md ESSENTIALS.md; do
   if [ -f "$HUB_HOME/$f" ]; then
     say "kept existing $f"
@@ -112,7 +115,7 @@ cat <<EOF
   Skills:   $SKILLS_DIR
 
   Next:
-    - Read $HUB_HOME/OVERVIEW.md - the whole framework on one page.
+    - Read $ENGINE_DIR/AGENTS.md - the rules, the loop, the gates.
     - Open any project with opencode; it auto-reads the global AGENTS.md,
       which points every session at the hub engine + INDEX.
     - Give the hub a remote to enable R15 auto-push:

@@ -6,7 +6,7 @@ Your AI agent forgets everything between sessions. Cairnlore is the pile of ston
 behind so the next session starts where the last one finished.
 
 ```bash
-git clone https://github.com/<you>/cairnlore.git ~/.cairnlore && bash ~/.cairnlore/install.sh
+git clone https://github.com/dvrxky/cairnlore.git ~/.cairnlore && bash ~/.cairnlore/install.sh
 ```
 
 ---

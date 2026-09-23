@@ -31,12 +31,26 @@ cd cairnlore-hub && mkdir -p knowledge journal && git commit --allow-empty -m "i
 **3. Install**
 
 ```bash
-git clone https://github.com/<you>/cairnlore.git ~/.cairnlore
+git clone https://github.com/dvrxky/cairnlore.git ~/.cairnlore
 CAIRNLORE_HOME=~/cairnlore-hub bash ~/.cairnlore/install.sh
 ```
 
 Done. The engine is at `~/.cairnlore`, your knowledge is in `~/cairnlore-hub`, and the global
 rules at `~/.config/opencode/AGENTS.md` point at both.
+
+Every path the installer uses can be overridden:
+
+| Variable | Default | What it sets |
+|---|---|---|
+| `CAIRNLORE_HOME` | `~/cairnlore-hub` | where your knowledge lives |
+| `CAIRNLORE_BRANCH` | `main` | the hub's long-lived branch |
+| `CAIRNLORE_ENGINE` | `~/.cairnlore/payload/framework` | where the engine is read from |
+| `CAIRNLORE_OPENCODE_DIR` | `~/.config/opencode` | where the global rules are written |
+| `CAIRNLORE_SKILLS_DIR` | `~/.agents/skills` | where skills are installed |
+| `CAIRNLORE_REPO` | this repository | the clone source, for a fork |
+
+An unset variable falls back to its default silently, so a typo in a name installs to the
+default path and reports success. Check the paths the installer echoes before trusting it.
 
 ---
 
@@ -45,7 +59,7 @@ rules at `~/.config/opencode/AGENTS.md` point at both.
 **1. Install the engine, pull-only**
 
 ```bash
-git clone https://github.com/<you>/cairnlore.git ~/.cairnlore
+git clone https://github.com/dvrxky/cairnlore.git ~/.cairnlore
 git -C ~/.cairnlore remote set-url --push origin DISABLED
 ```
 
