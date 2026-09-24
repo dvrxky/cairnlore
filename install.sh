@@ -86,6 +86,7 @@ fi
 
 # --- 2. global opencode rules ------------------------------------------------
 head "2. Global opencode rules -> $OPENCODE_DIR"
+mkdir -p "$OPENCODE_DIR"
 prev_bak="$(ls -t "$OPENCODE_DIR"/AGENTS.md.bak-* 2>/dev/null | head -1 || true)"
 backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
