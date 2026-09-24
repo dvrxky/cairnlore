@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.2.0 (Cairnlore)
+> Version: v4.3.0 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -229,6 +229,10 @@ correction is the new entry and git holds the rest (R18). A `[verified]` date is
 observation, not the discovery: re-verify anything volatile (infrastructure, config,
 versions, alarm state) before acting on a date older than 90 days. Tags carry over into
 specs and ADRs: an assumption written into a spec is `[inferred]` until it is checked.
+
+**R26 - Never state a file path from memory.** Verify on disk first (`ls` plus read
+or ffprobe), then quote the exact verified path. A fused or guessed path is a defect,
+never a shortcut.
 
 ---
 
