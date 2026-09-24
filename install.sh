@@ -112,10 +112,7 @@ for p in "$PAYLOAD"/global/plugins/*.js; do
   cp "$p" "$OPENCODE_DIR/plugins/"
   say "installed global plugin: $(basename "$p")"
 done
-# D2: the engine-sync plugin reads the engine-head stamp, so the installer must
-# create it. The stamp describes the engine the installed files came from: the
-# standard clone first, else the clone this installer is running from. Skip
-# silently if neither is a git repo.
+# D2: seed the engine-head stamp to close the window before the first session writes it.
 mkdir -p "$HOME/.config/cairnlore"
 engine_head=""
 for clone in "$HOME/.cairnlore" "$PKG_DIR"; do
@@ -139,6 +136,24 @@ done
 # surface the hub's own skills globally via a symlink (opencode native discovery)
 ln -sfn "$ENGINE_DIR/skills" "$SKILLS_DIR/_cairnlore" 2>/dev/null && say "linked engine skills at $SKILLS_DIR/_cairnlore" || true
 ln -sfn "$HUB_HOME/skills"   "$SKILLS_DIR/_hub"   2>/dev/null && say "linked hub skills at $SKILLS_DIR/_hub" || true
+# A skill promoted from payload/skills/ into the engine tree leaves its old top-level
+# copy behind to shadow the engine version in discovery. Sweep both symlink targets:
+# a real directory here with the same name is backed up and removed. Names still
+# shipped in payload/skills/ are never touched, and a missing or empty hub skills
+# dir is skipped silently. Idempotent: a clean tree prints nothing.
+for src in "$ENGINE_DIR/skills" "$HUB_HOME/skills"; do
+  [ -d "$src" ] || continue
+  for d in "$src"/*/; do
+    [ -d "$d" ] || continue
+    name="$(basename "$d")"
+    [ -e "$PAYLOAD/skills/$name" ] && continue
+    if [ -d "$SKILLS_DIR/$name" ] && [ ! -L "$SKILLS_DIR/$name" ]; then
+      backup "$SKILLS_DIR/$name"
+      rm -rf "$SKILLS_DIR/$name"
+      say "WARNING: removed shadowing skill $SKILLS_DIR/$name (backed up; engine version at $d now wins)"
+    fi
+  done
+done
 
 # --- done --------------------------------------------------------------------
 head "Done"
