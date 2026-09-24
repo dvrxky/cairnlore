@@ -108,7 +108,9 @@ rights without their knowledge ever touching. Details in [`SETUP.md`](SETUP.md),
 [`docs/adr/001-public-engine-private-brain.md`](docs/adr/001-public-engine-private-brain.md).
 
 At session start the agent reads exactly three files: the rules, the map, and the pile of
-stones. Everything else opens only when the work actually calls for it.
+stones. Everything else opens only when the work actually calls for it. The engine-sync
+plugin pulls the engine at every session start and when a session goes idle, so open
+sessions re-read new rules on their next turn.
 
 ---
 

@@ -80,14 +80,17 @@ engine files and leaves all existing knowledge untouched.
 
 ## C. Everyday use
 
-**Update the engine, any machine:**
+**Update the engine, any machine:** you do not. The engine-sync plugin pulls the
+engine at every session start and whenever a session goes idle, and R27 has open
+sessions re-read the rules on their next turn from the stamp it maintains. The manual
+pull below is only for a session that was already open when the plugin was installed:
 
 ```bash
 git -C ~/.cairnlore pull
 ```
 
 **Change the engine:** only where you publish from. Edit, commit, push. Every other
-machine picks it up on the next pull.
+machine picks it up at the next session.
 
 **Improve the engine from a pull-only machine:** you cannot commit it there. The
 `capture-upstream` skill fires on its own and prints a scrubbed, paste-ready block. Paste
@@ -192,6 +195,9 @@ small repo is to delete `.git`, re-initialise, and make one clean commit.
 ls ~/.cairnlore/payload/framework/AGENTS.md      # engine present
 ls <hub>/ESSENTIALS.md                       # playbook installed
 git -C ~/.cairnlore push 2>&1 | head -1          # pull-only machine: must fail
+ls ~/.config/opencode/plugins/engine-sync.js
+cat ~/.config/cairnlore/engine-head    # written by the plugin at session start; absent
+                                       # before the first session is expected, not an error
 ```
 
 Then start a session and ask for anything. The first line back should name a lane, for

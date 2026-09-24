@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.4.0 (Cairnlore)
+> Version: v4.4.1 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -234,10 +234,13 @@ specs and ADRs: an assumption written into a spec is `[inferred]` until it is ch
 or ffprobe), then quote the exact verified path. A fused or guessed path is a defect,
 never a shortcut.
 
-**R27 - Reload the engine when it moves under you.** At session start record the
-engine clone's HEAD. Each turn, if `~/.config/cairnlore/engine-head` holds a
-different SHA, run `git pull --ff-only` in the engine clone and re-read this file
-before acting. If the pull fails, surface it and stop; never force.
+**R27 - Reload the engine when it moves under you.** The engine-sync plugin owns
+`~/.config/cairnlore/engine-head`: it pulls the clone and writes the stamp on session
+start and idle. Never write, create, or repair that file; a missing stamp means no
+session has started since install, never an error and never a blocker. Note the clone's
+HEAD when you load this file; each turn, if the stamp holds a different SHA, re-read
+this file before acting. If a pull you run yourself fails, surface it and stop; never
+force.
 
 ---
 
