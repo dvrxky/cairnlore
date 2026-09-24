@@ -92,6 +92,13 @@ sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \
     "$PAYLOAD/global/AGENTS.md" > "$OPENCODE_DIR/AGENTS.md"
 say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
 [ -f "$OPENCODE_DIR/opencode.jsonc" ] || { cp "$PAYLOAD/global/opencode.jsonc" "$OPENCODE_DIR/opencode.jsonc"; say "seeded opencode.jsonc"; }
+mkdir -p "$OPENCODE_DIR/plugins"
+for p in "$PAYLOAD"/global/plugins/*.js; do
+  [ -e "$p" ] || continue
+  backup "$OPENCODE_DIR/plugins/$(basename "$p")"
+  cp "$p" "$OPENCODE_DIR/plugins/"
+  say "installed global plugin: $(basename "$p")"
+done
 
 # --- 3. generic global skills ------------------------------------------------
 head "3. Global skills -> $SKILLS_DIR"
