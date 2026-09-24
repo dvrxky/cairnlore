@@ -43,8 +43,10 @@ head() { printf '\n=== %s ===\n' "$*"; }
 
 backup() {
   local t="$1"
+  BACKUP_MADE=""
   if [ -e "$t" ] && [ ! -L "$t" ]; then
     mv "$t" "$t.bak-$TS"
+    BACKUP_MADE="$t.bak-$TS"
     say "backed up existing $t -> $t.bak-$TS"
   elif [ -L "$t" ]; then
     rm -f "$t"
@@ -87,20 +89,18 @@ fi
 # --- 2. global opencode rules ------------------------------------------------
 head "2. Global opencode rules -> $OPENCODE_DIR"
 mkdir -p "$OPENCODE_DIR"
-prev_bak="$(ls -t "$OPENCODE_DIR"/AGENTS.md.bak-* 2>/dev/null | head -1 || true)"
 backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
 sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \
     "$PAYLOAD/global/AGENTS.md" > "$OPENCODE_DIR/AGENTS.md"
 say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
 # D1: the overwrite above drops any local customizations into the backup with no
-# word said. Diff the backup this run made against the new file and report what
-# left the active file. Never auto-merge.
-new_bak="$(ls -t "$OPENCODE_DIR"/AGENTS.md.bak-* 2>/dev/null | head -1 || true)"
-if [ -n "$new_bak" ] && [ "$new_bak" != "$prev_bak" ]; then
-  dropped="$(diff "$new_bak" "$OPENCODE_DIR/AGENTS.md" 2>/dev/null | grep '^<' || true)"
+# word said. Diff the backup this run just made against the new file and report
+# what left the active file. Never auto-merge.
+if [ -n "${BACKUP_MADE:-}" ]; then
+  dropped="$(diff "$BACKUP_MADE" "$OPENCODE_DIR/AGENTS.md" 2>/dev/null | grep '^<' || true)"
   if [ -n "$dropped" ]; then
-    say "WARNING: local rules dropped from $OPENCODE_DIR/AGENTS.md (kept in $new_bak):"
+    say "WARNING: local rules dropped from $OPENCODE_DIR/AGENTS.md (kept in $BACKUP_MADE):"
     printf '%s\n' "$dropped"
   fi
 fi
