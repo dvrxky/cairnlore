@@ -86,11 +86,23 @@ fi
 
 # --- 2. global opencode rules ------------------------------------------------
 head "2. Global opencode rules -> $OPENCODE_DIR"
+prev_bak="$(ls -t "$OPENCODE_DIR"/AGENTS.md.bak-* 2>/dev/null | head -1 || true)"
 backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
 sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \
     "$PAYLOAD/global/AGENTS.md" > "$OPENCODE_DIR/AGENTS.md"
 say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
+# D1: the overwrite above drops any local customizations into the backup with no
+# word said. Diff the backup this run made against the new file and report what
+# left the active file. Never auto-merge.
+new_bak="$(ls -t "$OPENCODE_DIR"/AGENTS.md.bak-* 2>/dev/null | head -1 || true)"
+if [ -n "$new_bak" ] && [ "$new_bak" != "$prev_bak" ]; then
+  dropped="$(diff "$new_bak" "$OPENCODE_DIR/AGENTS.md" 2>/dev/null | grep '^<' || true)"
+  if [ -n "$dropped" ]; then
+    say "WARNING: local rules dropped from $OPENCODE_DIR/AGENTS.md (kept in $new_bak):"
+    printf '%s\n' "$dropped"
+  fi
+fi
 [ -f "$OPENCODE_DIR/opencode.jsonc" ] || { cp "$PAYLOAD/global/opencode.jsonc" "$OPENCODE_DIR/opencode.jsonc"; say "seeded opencode.jsonc"; }
 mkdir -p "$OPENCODE_DIR/plugins"
 for p in "$PAYLOAD"/global/plugins/*.js; do
@@ -99,6 +111,20 @@ for p in "$PAYLOAD"/global/plugins/*.js; do
   cp "$p" "$OPENCODE_DIR/plugins/"
   say "installed global plugin: $(basename "$p")"
 done
+# D2: the engine-sync plugin reads the engine-head stamp, so the installer must
+# create it. The stamp describes the engine the installed files came from: the
+# standard clone first, else the clone this installer is running from. Skip
+# silently if neither is a git repo.
+mkdir -p "$HOME/.config/cairnlore"
+engine_head=""
+for clone in "$HOME/.cairnlore" "$PKG_DIR"; do
+  engine_head="$(git -C "$clone" rev-parse HEAD 2>/dev/null || true)"
+  [ -n "$engine_head" ] && break
+done
+if [ -n "$engine_head" ]; then
+  printf '%s\n' "$engine_head" > "$HOME/.config/cairnlore/engine-head"
+  say "seeded engine-head: $engine_head"
+fi
 
 # --- 3. generic global skills ------------------------------------------------
 head "3. Global skills -> $SKILLS_DIR"

@@ -168,11 +168,17 @@ Do not preload. Treat loaded content as mandatory, overriding defaults.
 
 ## Typography - hard ban
 - NEVER emit em-dashes (U+2014), en-dashes (U+2013), or unicode ellipsis (U+2026)
-  in ANY output: code, prose, comments, commit messages, markdown files, published content,
+  in PROSE: code comments, commit messages, markdown body text, published content,
   tool arguments, or responses to the user. Use plain ASCII: hyphen-minus `-` instead of dashes,
   three periods `...` instead of ellipsis. If a range or aside would normally use a dash, rewrite:
   use `-`, split into two sentences, or use parentheses. This applies to files I write AND to text
   I return in chat. Before finishing any file edit or message, scan and replace.
+
+- The ban stops at prose. NEVER rewrite characters inside a fenced code block, an ASCII
+  or box-drawing diagram, a table drawn with box characters, or any quoted command output -
+  not even to make them ASCII. Those glyphs carry column alignment, and a two-character
+  substitute (`->` for an arrow) pushes a border out of place. Leave them byte-for-byte
+  as found. When scrubbing a file, convert outside fences only.
 
 ## Workflow guides - keep them in sync
 - When the user requests a change to a workflow we are building or executing from a guide/runbook,
