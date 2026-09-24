@@ -212,8 +212,3 @@ Do not preload. Treat loaded content as mandatory, overriding defaults.
   one line. An unfired trip-wire is an incomplete turn.
 - Present tense only (hub R18): no version history, no "previously we", no migration
   notes anywhere in the framework. Rewrite in place, let git hold the archive.
-
-## Personal memory
-- When the user corrects a preference: append one atomic row to `@MEMORY.md` (the audit ledger).
-  If it is a behavioral rule, also reflect it in this file (the active hot set). Durable
-  project facts / conventions / known-issues go into the hub, never here (hub R13).

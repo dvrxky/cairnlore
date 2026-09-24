@@ -9,7 +9,7 @@
 # Reproduces, on any machine, the complete setup:
 #   1. The knowledge hub (engine rules + templates + core skills) as a real git repo,
 #      ready to commit itself.
-#   2. Global opencode rules (~/.config/opencode/AGENTS.md + MEMORY.md + opencode.jsonc),
+#   2. Global opencode rules (~/.config/opencode/AGENTS.md + opencode.jsonc),
 #      with the hub path wired in.
 #   3. Generic global skills (~/.agents/skills/*) discoverable by opencode.
 #
@@ -86,13 +86,11 @@ fi
 
 # --- 2. global opencode rules ------------------------------------------------
 head "2. Global opencode rules -> $OPENCODE_DIR"
-mkdir -p "$OPENCODE_DIR/memory"
 backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
 sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \
     "$PAYLOAD/global/AGENTS.md" > "$OPENCODE_DIR/AGENTS.md"
 say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
-[ -f "$OPENCODE_DIR/MEMORY.md" ]     || { cp "$PAYLOAD/global/MEMORY.md" "$OPENCODE_DIR/MEMORY.md"; say "seeded MEMORY.md"; }
 [ -f "$OPENCODE_DIR/opencode.jsonc" ] || { cp "$PAYLOAD/global/opencode.jsonc" "$OPENCODE_DIR/opencode.jsonc"; say "seeded opencode.jsonc"; }
 
 # --- 3. generic global skills ------------------------------------------------
