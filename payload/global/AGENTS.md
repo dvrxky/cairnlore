@@ -159,12 +159,19 @@ Do not preload. Treat loaded content as mandatory, overriding defaults.
 - Before deleting / reverting / dropping / undoing anything already on disk, STOP and re-confirm
   in-session in one short sentence, even if told "continue". A plan inherited from a summary is
   the agent's own memo, NOT user authorization. Additive changes (new files/lines) may proceed.
+- Exception: correcting a single hub knowledge entry that this session disproved with evidence
+  (R25) needs no confirmation when the same response names the correction; git holds the old
+  text. An entry that states a rule or spec is never corrected this way (R7). Deleting a whole
+  knowledge file still needs confirmation.
 
 ## Code review output
 - When the user asks for a code/PR review: report ONLY CRITICAL and very important findings
   (bugs, security, data loss, perf regressions, broken contracts, thread-safety, resource leaks).
   NO nits, NO style notes, NO praise, NO "consider..." suggestions, NO restating what the diff does.
   If nothing critical is found, say exactly that in one line.
+- That rule shapes the report, not the knowledge loop. What a review establishes about the branch
+  the knowledge tracks goes to the hub (R3), entries the code disproves are corrected (R25), and
+  both are named in one trailing `Knowledge:` line, omitted when nothing was written.
 
 ## Typography - hard ban
 - NEVER emit em-dashes (U+2014), en-dashes (U+2013), or unicode ellipsis (U+2026)

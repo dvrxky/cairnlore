@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.4.1 (Cairnlore)
+> Version: v4.5.0 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -77,9 +77,10 @@ the user decide.
 **R8 - Match the output to the request. No embellishment.** Asked for one artifact
 (a commit message, a yes/no, a file to open) - give exactly that and stop. No tables,
 option-lists, or next-steps unless asked. Do not re-summarize results already shown.
-The single lane line required by R21 is part of the answer, not embellishment, and is
-the one addition this rule permits; when the request is for a bare artifact, the lane
-line is dropped too.
+Two lines are part of the answer, not embellishment, and are the only additions this
+rule permits: the lane line required by R21, dropped when the request is for a bare
+artifact, and the `Knowledge:` line naming what a session recorded or corrected (R12,
+section 6), never dropped, because it is where the user sees a correction.
 
 **R9 - Workflow-guide sync.** If the user changes a workflow this framework describes,
 record the change in the relevant guide file FIRST, then execute. The guide is the
@@ -103,7 +104,10 @@ never rename existing symbols unless the rename is the task.
 
 **R12 - Reviews report only what matters.** When asked to review, report only critical
 findings (bugs, security, data loss, perf regressions, broken contracts, races, leaks).
-No nits, no style, no praise. If nothing critical: say so in one line.
+No nits, no style, no praise. If nothing critical: say so in one line. R12 shapes the
+report, not the loop: what a review establishes about the branch the knowledge tracks is
+recorded (R3), entries the code disproves are corrected (R25), and both are named in one
+trailing `Knowledge:` line (`skills/adversarial-review/SKILL.md` step 6).
 
 **R13 - Knowledge lives ONLY in the central hub, not in code repos.** All knowledge,
 skills, and journals for every project the agent works on live in ONE shared repo -
@@ -310,7 +314,10 @@ Everywhere else, the agent never commits.
 - **Never `push --force`. Never touch `main`/`master`/`develop`** beyond `pull --ff-only`.
 - **Destructive actions** (delete, revert, drop, overwrite existing content) require a
   fresh one-sentence in-session confirmation, even if a plan said to continue. Adding new
-  files or lines may proceed.
+  files or lines may proceed. Exception: correcting a single hub knowledge entry that this
+  session disproved with evidence (R25) needs no confirmation when the same response names
+  the correction; git holds the old text. An entry that states a rule or spec is never
+  corrected this way (R7). Deleting a whole knowledge file still needs confirmation.
 - **Verify against disk before acting**: current branch, uncommitted state, actual file
   contents. Never trust a prior summary's claim about repo state.
 - **End every task that left changes** by printing, as the very LAST thing, a ready-to-use
@@ -565,8 +572,8 @@ call: run the checks in order, first match wins.
 
 | # | Test (first match wins) | Lane | What you do |
 |---|---|---|---|
-| 0 | Does it delete, revert, drop, force-push, or overwrite existing work? | SAFETY | Confirm in one sentence before anything else. Overrides all other lanes. |
-| 1 | Is it answerable from knowledge or code, with no change to disk? | ANSWER | Answer it. Cite `path:line`. No gates. |
+| 0 | Does it delete, revert, drop, force-push, or overwrite existing work? (A single evidence-backed knowledge correction does not count, section 6.) | SAFETY | Confirm in one sentence before anything else. Overrides all other lanes. |
+| 1 | Is it answerable from knowledge or code, with no change to project files? | ANSWER | Answer it. Cite `path:line`. No gates. R3 still records what you learn. |
 | 2 | Is it one mechanical edit, no behaviour change, no contract change, no new dependency? | DIRECT | Do it. Say in one line which gates you skipped and why. |
 | 3 | Did any SPEC wire in 13.2 trip? | GATE 1 | Run `write-spec`. Do this even if the user asked for code. |
 | 4 | Is there an agreed spec for this work, and no plan yet? | GATE 2 | Produce the plan, grill it, put it in the journal and todo list. |
@@ -606,6 +613,7 @@ and run the skill in the same turn (R22).
 - you learned a fact that would have saved you time had you known it at the start
 - you hit an error whose cause was not obvious from the message
 - you discovered a constraint that is not written in `knowledge/`
+- a review established something about the tracked branch that `knowledge/` lacks or states wrongly
 
 **Flip a provenance tag (R25) when ANY of:**
 - you observed something this session that `knowledge/` records as `[inferred]`
@@ -642,6 +650,7 @@ and run the skill in the same turn (R22).
 
 **Fire `adversarial-review` when:**
 - a diff is about to be handed to a human, and you wrote that diff
+- the user asks for a review of any diff or PR, in any wording
 
 **Fire `verify-skill-registry` when:**
 - you are about to create a skill, or you notice two skills with overlapping conditions

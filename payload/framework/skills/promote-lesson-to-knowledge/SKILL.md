@@ -1,6 +1,6 @@
 ---
 name: promote-lesson-to-knowledge
-description: Take a lesson, fact, fix, or convention discovered during a task and record it in the correct hub knowledge file, in the same turn it was learned. Formalizes the R3 self-organizing loop step from the framework's AGENTS.md. Use when the user says "promote this lesson", "record this fix", "add to known-issues", "add to conventions", "capture this convention", or when closing a task via `close-task`.
+description: Take a lesson, fact, fix, or convention discovered during a task and record it in the correct hub knowledge file, in the same turn it was learned. Formalizes the R3 self-organizing loop step from the framework's AGENTS.md. Use when the user says "promote this lesson", "record this fix", "add to known-issues", "add to conventions", "capture this convention", or when closing a task via `close-task`, or at the end of a review via `adversarial-review`.
 ---
 
 # Skill: Promote a lesson into knowledge (the R3 loop)
@@ -39,9 +39,11 @@ description: Take a lesson, fact, fix, or convention discovered during a task an
    - Append to that entry, expanding it. Do not create a new one.
    - If the existing entry is thinner than what you just learned, replace it in place
      with the richer version and note the merge in the journal.
-   - If the entry is out of date (states behaviour that no longer holds), rewrite it with
-     the new truth and add a one-liner about what changed (R7: surface, do not silently
-     reconcile - if the spec is contradictory to the reality, flag it).
+   - If the entry is out of date (states behaviour that no longer holds), replace it in
+     place with the new truth and its new provenance tag. Do not annotate what changed:
+     the commit message and the journal carry that, and git holds the old text (R25, R18).
+     If the entry states a spec, rule, or acceptance criterion that reality contradicts,
+     do not rewrite it: surface both values to the user (R7).
    If no existing entry covers it, jump to step 5.
 
 4. Choose the provenance tag (R25) before writing. `[verified YYYY-MM-DD]` requires that
