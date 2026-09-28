@@ -81,8 +81,8 @@ One source of truth, hooked into any agent by a link. This keeps the single-file
   durable lessons are promoted into `knowledge/*`; the journal keeps the full narrative.
 
 Knowledge and skills load on demand by trigger; a journal loads when its task is in progress.
-All three live in the hub and are committed by you (or by the agent if you have opted in
-for that session), never inside a project code repo.
+All three live in the hub; the agent commits and pushes hub changes at the end of
+every interaction that touched the hub, never inside a project code repo.
 
 ## How the self-organizing loop works
 
@@ -126,10 +126,9 @@ build, or deploy in any project code repo. That work stays with you.
 - Every task that leaves changes ends by printing a ready-to-use commit message in a
   single fenced block (matching your repo's prefix convention).
 
-**Hub commits are opt-in.** If you tell the agent (in a session or via a persistent
-rule) to commit and push hub updates, the agent may do so ONLY inside the hub worktree
-on the hub branch, and still prints the commit message. Code-repo commits remain
-forbidden. See `AGENTS.md` section 6.
+**The hub auto-commits.** The agent commits and pushes hub updates at the end of every
+interaction that touched the hub, ONLY inside the hub worktree on the hub branch, and
+echoes the commit message. Code-repo commits remain forbidden. See `AGENTS.md` section 6.
 
 ## Where it lives: the central hub (worktree model)
 
@@ -166,7 +165,7 @@ project.
   `knowledge/projects/<project>/` or `skills/`; changes to the engine itself go in the
   framework source repo's `AGENTS.md`. One file per concern, never a fork of a topic
   (R4).
-- **You commit code changes, always.** Hub commits are opt-in (section 6).
+- **You commit code changes, always.** The hub auto-commits (section 6).
 
 ## What you customize
 

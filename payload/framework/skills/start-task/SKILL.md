@@ -7,8 +7,8 @@ description: Open (or resume) a per-task journal in the hub at the start of a no
 
 > Opens a per-task journal in the hub that captures the goal, clarifications and their
 > answers, decisions, and lessons as the work happens. Same mechanics as the rest of
-> the framework: hub-only, parameterized, only commits inside the hub if the user has
-> opted in for the session (AGENTS.md R2, R13, R14, sections 6 / 10 / 11).
+> the framework: hub-only, parameterized, and the hub auto-commits and pushes
+> (AGENTS.md R2, R13, R14, R15, sections 6 / 10 / 11).
 >
 > For closing a task (promote lessons, mark Done): see `skills/close-task/SKILL.md`.
 
@@ -38,8 +38,8 @@ description: Open (or resume) a per-task journal in the hub at the start of a no
    When a lesson is durable, run `promote-lesson-to-knowledge` in the same turn.
 7. Handle commits per AGENTS.md section 6:
    - Code changes in the project repo: NEVER commit; surface a commit message.
-   - Hub changes: commit only if the user has opted in this session; otherwise surface
-     the hub commit message.
+   - Hub changes: commit and push at the end of the interaction (R15), echoing the
+     commit message.
 
 When the work is done, run the `close-task` skill.
 

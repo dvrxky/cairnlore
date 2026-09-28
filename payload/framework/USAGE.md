@@ -25,7 +25,8 @@ lands in THIS file first, then gets executed.
     root or per-project under `journal/projects/<project>/`.
 - The agent reads `AGENTS.md` + `INDEX.md` at session start, loads the rest on demand,
   records what it learns in the same turn, and hands you commit messages. It never
-  commits inside project code repos; it may commit inside the hub if you have opted in.
+  commits inside project code repos; it commits and pushes hub changes at the end of
+  every interaction that touched the hub.
 
 ---
 
@@ -81,7 +82,7 @@ ln -s ~/git/<hub-repo>-worktrees/<hub-root>/<hub-root>/skills/<slug> \
       ~/.agents/skills/<slug>
 ```
 
-### 2.5 Commit the setup on the hub branch (you commit, unless opted in)
+### 2.5 Commit the setup on the hub branch
 
 ```bash
 git add <hub-root> AGENTS.md
@@ -105,7 +106,8 @@ The agent:
 - fills `config.md` from what it verifies in the project code repo (build tool,
   versions, how to run, entry points - each cited `path:line`),
 - adds a component-map row for the project in `INDEX.md`,
-- prints a commit message (or commits the hub, if opted in).
+- prints a commit message for the code repo, and commits and pushes the hub changes,
+  echoing the commit message.
 
 ---
 
@@ -138,8 +140,8 @@ When a lesson is durable, it also writes it into the right knowledge file
 notes the promotion in the journal.
 
 The agent stages code changes and prints commit messages for the code repo. You commit
-in the code repo. The hub is either handed to you the same way, or committed by the
-agent if opted in.
+in the code repo. The agent commits and pushes hub changes at the end of every
+interaction that touched the hub, and echoes the message.
 
 ### 4.3 Close the task
 
@@ -171,8 +173,8 @@ The agent updates files on disk and prints a ready-to-use commit message for any
 changes. You decide when it lands in the code repo. The agent never runs `git commit`
 in a project code repo, never builds, never deploys.
 
-The hub itself may be auto-committed by the agent if you have explicitly opted in for a
-session. That is the only exception.
+The hub itself is committed and pushed by the agent at the end of every interaction
+that touched it, on the hub branch. That is the only exception.
 
 ---
 
