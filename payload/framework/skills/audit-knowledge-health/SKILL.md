@@ -93,7 +93,9 @@ description: Measure the health of the hub's knowledge before curating it - whic
 4. Grade the playbook against its own rules (R19).
 
    ```sh
-   echo "items: $(rg -c '^- .\[E-' ESSENTIALS.md) (soft target 40)"
+    echo "items: $(rg -c '^- .\[E-' ESSENTIALS.md) (soft target 40)"
+    rg -o '\[E-[0-9]+\]' ESSENTIALS.md | sort | uniq -d   # R19: every id is unique
+    rg '\[E-[0-9]+\]' ESSENTIALS.md | rg -v '^- `\[E-[0-9]+\] \(h:[0-9]+ m:[0-9]+\)`'   # off-format items the count misses
    rg -n 'm:[2-9]' ESSENTIALS.md   # R19: delete or rewrite, never keep
    rg -n '\(h:0 m:0\)' ESSENTIALS.md   # never fired: demote first if over target
    ```
@@ -117,14 +119,18 @@ description: Measure the health of the hub's knowledge before curating it - whic
    group that matter most; hold the rest for follow-up.
 
 7. Apply deltas one at a time, each on explicit confirmation (R23). Promote a headline rule
-   into `ESSENTIALS.md` with the next free id and `(h:0 m:0)`. Demote by deleting the line
+   into `ESSENTIALS.md` with the highest id + 1 from a fresh read and `(h:0 m:0)`. Demote by deleting the line
    only, never by merging two items into a vaguer one. Repair a broken pointer in place.
    Delete an orphan only after confirming it is not a spec or ADR, which are immutable.
+   To fix a collision the audit finds, the older item keeps the id and the newer one moves;
+   `git log --reverse -S'<phrase from the item>' -- ESSENTIALS.md` shows each item's first
+   commit.
 
 8. Commit and push the hub (R15).
 
 ## Validation
 
+- No two items share an id, and every item matches the header's format line.
 - Every pointer in `ESSENTIALS.md` and every `knowledge/` row in `INDEX.md` resolves.
 - No large group of files shares one identical high score and one basename, which is the
   signature of basename-collision counting. Isolated ties at low scores are normal and

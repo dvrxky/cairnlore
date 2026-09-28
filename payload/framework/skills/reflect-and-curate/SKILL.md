@@ -40,8 +40,10 @@ playbook is the single fastest way to make the framework worse over time.
 Apply the smallest possible edits (R23). Never rewrite the file.
 
 - **Add** a new item only if the fact would change a decision on a FUTURE task. Give it
-  the next free id, `(h:0 m:0)`, one line, and a pointer to where the detail lives. Write
+  the highest id + 1 from a read of the file made now (other sessions write it
+  too), `(h:0 m:0)`, one line, and a pointer to where the detail lives. Write
   the detail into `knowledge/` first; the playbook item is only the trigger.
+  After writing, `grep -oE '\[E-[0-9]+\]' ESSENTIALS.md | sort | uniq -d` must print nothing.
 - **Edit** an item to be MORE specific, never less. If you are tempted to generalise two
   items into one, stop: that is brevity bias and it destroys the value.
 - **Demote** when the file exceeds its soft target of 40 items. Remove the line here; the

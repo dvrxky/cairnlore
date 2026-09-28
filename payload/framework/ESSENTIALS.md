@@ -5,6 +5,8 @@
 > items into a vaguer one.
 >
 > Format: `[id] (h:helped m:misled) rule -> pointer to detail`
+> Ids are unique. Several sessions write this file, so take the highest id + 1 from a read
+> made at edit time, never from an earlier one.
 > Soft target 40 items. Past it, demote the lowest value ones; the detail already lives
 > in `knowledge/`. An item with `m` >= 2 gets deleted or rewritten, never kept.
 
