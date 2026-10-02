@@ -155,7 +155,8 @@ Do not preload. Treat loaded content as mandatory, overriding defaults.
   auto-commits and pushes. Any change inside the hub root (`__HUB_ROOT__`: knowledge,
   skills, journals, INDEX, ESSENTIALS) MUST be committed AND pushed by the
   agent at the end of every interaction that touched it, on the hub branch, via
-  `git add -A && git commit -m "..." && git push`. No opt-in, no "print and stop". This is
+  `git add -- <paths this interaction wrote> && git commit -m "..." && git push`, never
+  `git add -A`: other sessions can share the worktree. No opt-in, no "print and stop". This is
   the hub's R15. It applies ONLY to that worktree/branch; every other repo, branch, or
   worktree stays under the strict no-commit rule below.
 - NEVER run `git commit`. NEVER ask whether/how to commit (not in prose, not via a question, not

@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.6.0 (Cairnlore)
+> Version: v4.6.1 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -133,8 +133,10 @@ the distilled memory.
 exception to the general "no commits, no pushes" rule (section 6). Any change made
 inside `HUB_WORKTREE/HUB_ROOT/` (knowledge, skills, journals, INDEX, ESSENTIALS,
 README) MUST be committed and pushed by the agent at the end of every
-interaction that touched it, on `HUB_BRANCH`, using ordinary `git add -A && git
-commit -m "..." && git push`. No opt-in prompt, no "print the commit message and
+interaction that touched it, on `HUB_BRANCH`, staging only the paths this interaction wrote
+(`git add -- <path>...`, then `git diff --cached --stat` to confirm nothing else is staged)
+before `git commit -m "..." && git push`. Several sessions can share one hub worktree, and
+`git add -A` would commit their unfinished work. No opt-in prompt, no "print the commit message and
 stop" - the agent commits and pushes. The commit message follows the hub repo's own
 prefix convention (check `git log --oneline -20`) and is echoed in the final response.
 This exception applies ONLY to the hub worktree on `HUB_BRANCH`; every other repo,
