@@ -96,7 +96,6 @@ fi
 # --- 2. global opencode rules ------------------------------------------------
 head "2. Global opencode rules -> $OPENCODE_DIR"
 mkdir -p "$OPENCODE_DIR"
-backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
 new_rules="$(mktemp)"
 sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \

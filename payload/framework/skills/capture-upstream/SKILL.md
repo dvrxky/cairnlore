@@ -80,6 +80,8 @@ prefixes, no internal URLs or account ids, no user-specific paths. Verified.
 
 - The capture has an upstream/ file and an INDEX "Pending upstream" row with a shipped check
   that fails against the current engine.
+- The block's verify steps run every path the change adds or guards: a test that runs one
+  of three guarded paths proves that one only.
 - The block names the exact engine file and the exact placement for every change.
 - The block is ASCII prose (R10) and contains no project, organisation, or host identifiers.
 - Nothing in the engine clone on this machine was edited.
