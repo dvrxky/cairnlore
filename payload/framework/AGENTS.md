@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.6.1 (Cairnlore)
+> Version: v4.6.2 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 

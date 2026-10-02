@@ -38,14 +38,11 @@ description: Close an in-progress task journal in the hub. Fills Outcome, promot
    - Task-specific / one-off? Leave in the journal only.
 5. Fill the **Promoted to knowledge** section at the bottom: bullet-list the promotions
    with their destination file and anchor.
-5a. **Refine `ESSENTIALS.md` (R19).** Open it and do all three:
-   - PROMOTE: any fact that has now been load-bearing on two or more separate tasks earns
-     a line (the distilled trigger plus a pointer, never the detail).
-   - EVICT: any line that did not influence a decision recently comes out. It stays in
-     `knowledge/`; it just stops being always-loaded.
-   - COMPRESS: merge any two lines that say overlapping things.
-   The file has a SOFT TARGET of 40 items. Past it, demote the lowest-value ones. A
-   turn that grows ESSENTIALS without cutting anything is an incomplete close-task.
+5a. **Refine `ESSENTIALS.md` (R19).** Open it and:
+   - PROMOTE: a fact that has been load-bearing on two or more separate tasks earns a
+     line (the distilled trigger plus a pointer, never the detail).
+   - DEMOTE, only past the soft target of 40 items: delete the lowest-value lines, `h:0`
+     first. Never merge two lines into one: a merged line is vaguer than either (R19).
 5b. If this task had a spec at `knowledge/projects/<project>/specs/<slug>.md`, update its
    `Status:` (usually to `implemented`) and reconcile any requirement that changed during
    implementation. If an architectural decision was made mid-flight and never recorded,
