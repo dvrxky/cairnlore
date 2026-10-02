@@ -44,8 +44,12 @@ engine. Keep it local.
 4. **Emit the block** in the format below, as the LAST thing in the response, so it is
    easy to copy.
 
-5. **Log it** in the task journal under `Upstream captures` so a later session can tell
-   whether it was ever applied.
+5. **Register it as pending** (R28). Write the scrubbed block, the shipped check and the
+   local copy in force to the hub's `upstream/<YYYY-MM-DD>_<slug>.md`, add a row to the hub
+   INDEX "Pending upstream" table (file, what it changes, shipped check), and log it in the
+   task journal under `Upstream captures`. A shipped check is one command that passes only
+   when the engine on disk holds the change, for example
+   `grep -q '<new text>' ~/.cairnlore/<file>`.
 
 ## Output format
 
@@ -74,6 +78,8 @@ prefixes, no internal URLs or account ids, no user-specific paths. Verified.
 
 ## Validation
 
+- The capture has an upstream/ file and an INDEX "Pending upstream" row with a shipped check
+  that fails against the current engine.
 - The block names the exact engine file and the exact placement for every change.
 - The block is ASCII prose (R10) and contains no project, organisation, or host identifiers.
 - Nothing in the engine clone on this machine was edited.

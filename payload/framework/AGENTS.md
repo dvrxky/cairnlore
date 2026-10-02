@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.5.0 (Cairnlore)
+> Version: v4.6.0 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -36,6 +36,10 @@ progressive disclosure: cheap startup, full depth on demand.
 
 If a task journal is still In progress (section 11), load it too to restore that task's
 goal, answered clarifications, and lessons before continuing.
+
+If the hub INDEX has a "Pending upstream" table, run each row's shipped check against the
+engine on disk. Retire the rows that pass (R28). Every other row outranks the engine text it
+changes.
 
 ---
 
@@ -246,6 +250,15 @@ HEAD when you load this file; each turn, if the stamp holds a different SHA, re-
 this file before acting. If a pull you run yourself fails, surface it and stop; never
 force.
 
+**R28 - Local work stays in force until upstream ships it.** A change made on a machine and
+not yet shipped upstream stays in force there, and nothing that syncs from a remote may
+overwrite or outrank it until it ships. An engine change captured on a pull-only machine is
+a pending entry: one file per capture in the hub's `upstream/` directory, listed in the hub
+INDEX "Pending upstream" table with a shipped check. The entry outranks the engine text it
+changes for every session on that hub. At session start, run each shipped check against the
+engine on disk; a pass retires the entry, and the retirement is named in the response. If
+the engine shipped a different version, keep the entry in force and quote both texts (R7).
+
 ---
 
 ## 3. The self-organizing loop (R3 in detail)
@@ -320,6 +333,9 @@ Everywhere else, the agent never commits.
   corrected this way (R7). Deleting a whole knowledge file still needs confirmation.
 - **Verify against disk before acting**: current branch, uncommitted state, actual file
   contents. Never trust a prior summary's claim about repo state.
+- **Syncs never overwrite unshipped local work** (R28): pull with `--ff-only` only. Never
+  `reset --hard`, `checkout --`, `restore`, `stash drop`, `clean`, or a rebase that drops
+  local commits. If a sync cannot proceed without overwriting, stop and report.
 - **End every task that left changes** by printing, as the very LAST thing, a ready-to-use
   commit message in a single fenced code block containing ONLY the message. Match the
   repo's existing prefix convention (check `git log --oneline -20`). Any rationale goes

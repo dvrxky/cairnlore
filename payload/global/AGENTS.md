@@ -126,8 +126,25 @@ into the hub, never into a project code repo, and never into the engine.
 NEVER edit the engine directly on a machine where its clone cannot push. Improvements to
 a rule, skill, or workflow are exported with the `capture-upstream` skill instead.
 
-The engine's `AGENTS.md` takes precedence over anything below when they conflict. The
-sections below remain in force for cases the engine does not cover.
+The engine's `AGENTS.md` takes precedence over anything below when they conflict, except a
+pending upstream entry, which outranks it until the engine ships it (see "Local first until
+shipped upstream"). The sections below remain in force for cases the engine does not cover.
+
+## Local first until shipped upstream
+- A change made on this machine that has not shipped upstream stays in force, and nothing
+  that syncs from a remote may overwrite or outrank it until it ships.
+- An engine change captured here is a pending entry: one file per capture in the hub's
+  `upstream/` directory, listed in the hub INDEX "Pending upstream" table with its shipped
+  check. The entry outranks the engine text it changes for every session on this hub.
+  Before acting on an engine rule or running an engine skill, check that table.
+- At session start, run every shipped check against the engine on disk. A pass means the
+  engine holds the change: delete the entry, its INDEX row and any hub copy it names, and
+  name the retirement in the response; git keeps the text. If the engine shipped a different
+  version, keep the entry in force and quote both texts (R7).
+- Syncs keep unshipped local work: pull with `--ff-only` only; never `reset --hard`,
+  `checkout --`, `restore`, `stash drop`, `clean`, or a rebase that drops local commits; if a
+  sync cannot proceed without overwriting, stop and report. Before running `install.sh`, diff
+  every file it would replace and keep the local side.
 
 ## Lazy context loading
 When a rule below points to an `@path`, load it with Read ONLY when the task matches its trigger.

@@ -37,6 +37,13 @@ ENGINE_DIR="${CAIRNLORE_ENGINE:-$HOME/.cairnlore/payload/framework}"  # where th
 HUB_BRANCH="${CAIRNLORE_BRANCH:-main}"                        # hub long-lived branch
 OPENCODE_DIR="${CAIRNLORE_OPENCODE_DIR:-$HOME/.config/opencode}"  # global opencode config
 SKILLS_DIR="${CAIRNLORE_SKILLS_DIR:-$HOME/.agents/skills}"        # global skills
+KEEP_LOCAL=0
+KEPT=""
+for arg in "$@"; do
+  case "$arg" in
+    --keep-local) KEEP_LOCAL=1 ;;
+  esac
+done
 
 say()  { printf '  %s\n' "$*"; }
 head() { printf '\n=== %s ===\n' "$*"; }
@@ -91,9 +98,19 @@ head "2. Global opencode rules -> $OPENCODE_DIR"
 mkdir -p "$OPENCODE_DIR"
 backup "$OPENCODE_DIR/AGENTS.md"
 # wire the hub path into the global rules
+new_rules="$(mktemp)"
 sed -e "s#__HUB_ROOT__#$HUB_HOME#g" -e "s#__ENGINE_DIR__#$ENGINE_DIR#g" \
-    "$PAYLOAD/global/AGENTS.md" > "$OPENCODE_DIR/AGENTS.md"
-say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
+    "$PAYLOAD/global/AGENTS.md" > "$new_rules"
+if [ "$KEEP_LOCAL" = 1 ] && [ -e "$OPENCODE_DIR/AGENTS.md" ] && ! diff -q "$OPENCODE_DIR/AGENTS.md" "$new_rules" >/dev/null 2>&1; then
+  say "kept local $OPENCODE_DIR/AGENTS.md (differs from template); diff:"
+  diff "$OPENCODE_DIR/AGENTS.md" "$new_rules" || true
+  KEPT="$KEPT $OPENCODE_DIR/AGENTS.md"
+  rm -f "$new_rules"
+else
+  backup "$OPENCODE_DIR/AGENTS.md"
+  mv "$new_rules" "$OPENCODE_DIR/AGENTS.md"
+  say "wrote $OPENCODE_DIR/AGENTS.md (engine = $ENGINE_DIR, knowledge = $HUB_HOME)"
+fi
 # D1: the overwrite above drops any local customizations into the backup with no
 # word said. Diff the backup this run just made against the new file and report
 # what left the active file. Never auto-merge.
@@ -108,8 +125,15 @@ fi
 mkdir -p "$OPENCODE_DIR/plugins"
 for p in "$PAYLOAD"/global/plugins/*.js; do
   [ -e "$p" ] || continue
-  backup "$OPENCODE_DIR/plugins/$(basename "$p")"
-  cp "$p" "$OPENCODE_DIR/plugins/"
+  t="$OPENCODE_DIR/plugins/$(basename "$p")"
+  if [ "$KEEP_LOCAL" = 1 ] && [ -e "$t" ] && ! diff -q "$t" "$p" >/dev/null 2>&1; then
+    say "kept local $t (differs from payload); diff:"
+    diff "$t" "$p" || true
+    KEPT="$KEPT $t"
+    continue
+  fi
+  backup "$t"
+  cp "$p" "$t"
   say "installed global plugin: $(basename "$p")"
 done
 # D2: seed the engine-head stamp to close the window before the first session writes it.
@@ -129,6 +153,12 @@ head "3. Global skills -> $SKILLS_DIR"
 mkdir -p "$SKILLS_DIR"
 for d in "$PAYLOAD"/skills/*/; do
   name="$(basename "$d")"
+  if [ "$KEEP_LOCAL" = 1 ] && [ -e "$SKILLS_DIR/$name" ] && ! diff -rq "$SKILLS_DIR/$name" "$d" >/dev/null 2>&1; then
+    say "kept local $SKILLS_DIR/$name (differs from payload); diff:"
+    diff -rq "$SKILLS_DIR/$name" "$d" || true
+    KEPT="$KEPT $SKILLS_DIR/$name"
+    continue
+  fi
   backup "$SKILLS_DIR/$name"
   cp -R "$d" "$SKILLS_DIR/$name"
   say "installed skill: $name"
@@ -170,3 +200,7 @@ cat <<EOF
     - Give the hub a remote to enable R15 auto-push:
         git -C "$HUB_HOME" remote add origin <url> && git -C "$HUB_HOME" push -u origin $HUB_BRANCH
 EOF
+if [ -n "$KEPT" ]; then
+  say "kept local (merge by hand):"
+  for k in $KEPT; do say "  $k"; done
+fi
