@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.6.2 (Cairnlore)
+> Version: v4.7.0 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -118,7 +118,7 @@ skills, and journals for every project the agent works on live in ONE shared rep
 the **central hub** (section 10) - never inside the individual project code repos on
 any branch. Even when you are editing code in a project repo, every write goes to its
 home in the hub: knowledge to `HUB_ROOT/knowledge/` (project-scoped under
-`knowledge/projects/<project>/`), skills to `HUB_ROOT/skills/<verb-noun>/SKILL.md`, and
+`<PROJECT_KNOWLEDGE>/`), skills to `HUB_ROOT/skills/<verb-noun>/SKILL.md`, and
 journals to `HUB_ROOT/journal/`. Never create `.ai/` folders, `feature/docs`
 branches, or any framework artefact inside a project code repo.
 
@@ -280,14 +280,14 @@ This is not optional. It is what makes the knowledge base grow and stop future s
 ## 4. Classification - where each discovery goes
 
 All paths are relative to the central hub (`HUB_ROOT`, section 10). Project-scoped
-material goes under `knowledge/projects/<project>/`; cross-project material goes at the
+material goes under `<PROJECT_KNOWLEDGE>/`; cross-project material goes at the
 hub root.
 
 | Discovery | Goes to |
 |---|---|
-| An error and its fix / a tool that misbehaves / a failed approach | `knowledge/projects/<project>/known-issues.md` (or `knowledge/known-issues.md` if cross-project) |
-| A convention, pattern, rule, mapping, or domain fact | `knowledge/projects/<project>/conventions.md` (or `knowledge/conventions.md`) |
-| Build path, env, version, setup, or config fact | `knowledge/projects/<project>/config.md` (or `knowledge/config.md`) |
+| An error and its fix / a tool that misbehaves / a failed approach | `<PROJECT_KNOWLEDGE>/known-issues.md` (or `knowledge/known-issues.md` if cross-project) |
+| A convention, pattern, rule, mapping, or domain fact | `<PROJECT_KNOWLEDGE>/conventions.md` (or `knowledge/conventions.md`) |
+| Build path, env, version, setup, or config fact | `<PROJECT_KNOWLEDGE>/config.md` (or `knowledge/config.md`) |
 | A new component/service/module worth mapping | `INDEX.md` (component map) |
 | A repeatable workflow worth reusing | `skills/<verb-noun>/SKILL.md` (section 8) |
 | A clarification, answer, decision, or in-flight lesson during a task | the active task journal (section 11) |
@@ -353,7 +353,7 @@ clauses above apply to every repo that is not the hub worktree on `HUB_BRANCH`.
 
 On the first session that touches a new project, from inside the central hub:
 
-1. Create `knowledge/projects/<project>/` with `config.md`, `conventions.md`,
+1. Create `<PROJECT_KNOWLEDGE>/` with `config.md`, `conventions.md`,
    `known-issues.md` copied from the headed templates at `knowledge/config.md`,
    `knowledge/conventions.md`, and `knowledge/known-issues.md` in the engine.
 2. Fill `config.md` from what you can verify on disk in the project code repo (build
@@ -403,7 +403,7 @@ the source of truth for the workflow, not your memory of it.
 
 Two layers, two homes. Classify every change before writing it:
 
-- **Project knowledge / skills** (specific to ONE project) -> `knowledge/projects/<project>/`
+- **Project knowledge / skills** (specific to ONE project) -> `<PROJECT_KNOWLEDGE>/`
   or `skills/` in the hub. This is the common case and happens automatically through the
   loop (section 3).
 - **Cross-project knowledge / skills** (shared across <your-domain> projects) -> `knowledge/*.md`
@@ -444,6 +444,8 @@ block in `INDEX.md`:
 | `HUB_WORKTREE` | filesystem path to the hub checkout | `~/git/<hub-repo>-worktrees/<hub-root>` |
 | `HUB_ROOT` | where `AGENTS.md`, `INDEX.md`, `knowledge/`, `skills/`, `journal/` sit | `<hub-root>/` (relative to `HUB_WORKTREE`) |
 | `HUB_BRANCH` | the long-lived branch this hub is on | `docs/risk-ai-self-organizing-knowledge-framework` |
+| `PROJECT_KNOWLEDGE` | a project's knowledge home; `<project>` may span several path segments | `knowledge/projects/<project>` |
+| `PROJECT_JOURNAL` | a project's journal home | `journal/projects/<project>` |
 
 **Where writes go.** You may be coding in ANY project repo. All knowledge, skill, and
 journal writes still go to `HUB_WORKTREE/HUB_ROOT/...` (R13). No branch switching in the
@@ -466,6 +468,11 @@ HUB_ROOT/
     +-- <YYYY-MM-DD>_<slug>.md         # cross-project journals
     +-- projects/<project>/            # per-project journals if a project has many
 ```
+
+A hub may move both homes, for example to `projects/<project>/knowledge` and
+`projects/<project>/journal`, by setting the two parameters in its INDEX Operating model. If older
+citations must keep resolving, it leaves relative links at the default paths. Files are still written,
+cited and staged at the parameter path, because `git add` refuses a path through a link.
 
 `AGENTS.md` and the core skills are NOT in this tree. They live in the engine repo and
 are read from there, so a `git pull` of the engine updates every hub at once.
@@ -501,7 +508,7 @@ reasoning that knowledge files intentionally leave out, and makes a task resumab
 auditable.
 
 - **Location:** `HUB_ROOT/journal/<YYYY-MM-DD>_<task-slug>.md` in the hub worktree (R13).
-  Per-project journals may sit at `HUB_ROOT/journal/projects/<project>/<YYYY-MM-DD>_<slug>.md`
+  Per-project journals may sit at `HUB_ROOT/<PROJECT_JOURNAL>/<YYYY-MM-DD>_<slug>.md`
   if a project has enough traffic to warrant its own subdir. Authoring template:
   `journal/_template.md`.
 - **Lifecycle** (driven by the `start-task` skill):
@@ -535,12 +542,12 @@ phrase. Do NOT produce a task list here.
 2. Run `grill-me`: interrogate the user branch by branch until the requirements are
    thorough. Resolve each dependency between decisions before moving on. If a question
    can be answered by reading the code, read the code instead of asking.
-3. Write the SPEC to `knowledge/projects/<project>/specs/<slug>.md`. It captures
+3. Write the SPEC to `<PROJECT_KNOWLEDGE>/specs/<slug>.md`. It captures
    requirements, business rules, edge cases, gotchas, explicit non-goals, and the
    acceptance criteria. It is written for someone maintaining this feature nine months
    from now with no memory of the conversation.
 4. Every architectural decision gets its OWN ADR at
-   `knowledge/projects/<project>/adr/<NNN>-<slug>.md`: context, options considered,
+   `<PROJECT_KNOWLEDGE>/adr/<NNN>-<slug>.md`: context, options considered,
    decision, consequences. One decision per ADR. An ADR is immutable once accepted; to
    change it, write a new ADR that supersedes it by number.
 
@@ -573,8 +580,8 @@ Verify against the spec's acceptance criteria, not against the diff. Then run
 
 | Artefact | Lifespan | Location |
 |---|---|---|
-| Spec | durable, maintained | `knowledge/projects/<project>/specs/<slug>.md` |
-| ADR | durable, immutable | `knowledge/projects/<project>/adr/<NNN>-<slug>.md` |
+| Spec | durable, maintained | `<PROJECT_KNOWLEDGE>/specs/<slug>.md` |
+| ADR | durable, immutable | `<PROJECT_KNOWLEDGE>/adr/<NNN>-<slug>.md` |
 | Plan | disposable | task journal + todo list |
 | Lessons | durable, distilled | `knowledge/*.md`, then `ESSENTIALS.md` if load-bearing |
 

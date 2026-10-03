@@ -27,6 +27,17 @@ description: Measure the health of the hub's knowledge before curating it - whic
    cd "$HUB"
    ```
 
+   Read the project homes from the hub INDEX Operating model; fall back to the
+   defaults when the hub does not set them:
+
+   ```sh
+   PKNOW=$(sed -n 's/^| `PROJECT_KNOWLEDGE` | *`\([^`]*\)`.*/\1/p' INDEX.md | head -1)
+   case "$PKNOW" in */*) : ;; *) PKNOW='knowledge/projects/<project>' ;; esac
+   PROOT=$(printf '%s' "$PKNOW" | cut -d/ -f1)
+   ```
+
+   When `PROOT` is `knowledge`, every command below stays as it is today.
+
 2. Rank knowledge files by inbound references. The top of this list is what the hub
    actually runs on; the bottom is a demotion shortlist.
 
@@ -65,6 +76,52 @@ description: Measure the health of the hub's knowledge before curating it - whic
    wc -l < /tmp/orphans.txt
    ```
 
+   On a moved layout (`PROOT` is not `knowledge`), scan `knowledge` and `$PROOT`,
+   skip `*/journal/*`, and key duplicates by home: a duplicate basename directly
+   inside a project's knowledge home keys on three segments
+   (`<project-last>/<home-dir>/<file>`) and also counts the two-segment default
+   form (`<project-last>/<file>`) that older citations use; a duplicate basename
+   directly in `knowledge/` counts only path tokens that do not lie inside
+   `$PROOT/`.
+
+   ```sh
+   KH=$(printf '%s' "$PKNOW" | rev | cut -d/ -f1 | rev)
+   case "$KH" in *'<'*) KH=knowledge ;; esac
+   find knowledge "$PROOT" -name '*.md' -not -path '*/journal/*' | xargs -n1 basename | sort | uniq -d > /tmp/dupnames.txt
+   find knowledge "$PROOT" -name '*.md' -not -path '*/journal/*' -print0 | while IFS= read -r -d '' f; do
+     n=$(basename "$f")
+     if grep -qxF "$n" /tmp/dupnames.txt; then
+       k=$(echo "$f" | rev | cut -d/ -f1,2 | rev)
+       case "$f" in
+         "$PROOT"/*/"$KH"/"$n")
+           k3=$(echo "$f" | rev | cut -d/ -f1,2,3 | rev)
+           kold=$(echo "$f" | rev | cut -d/ -f1,3 | rev)
+           c=$(rg -l --fixed-strings -e "$k3" -e "$kold" . --glob "!$f" 2>/dev/null | wc -l | tr -d ' ') ;;
+         knowledge/"$n")
+           kre=$(printf '%s' "$k" | sed 's/\./\\./g')
+           c=$(rg -o --with-filename --no-line-number "[^[:space:]\`'\"()<>|]*$kre" . --glob "!$f" 2>/dev/null \
+             | grep -vE ":[^:]*$PROOT/" | cut -d: -f1 | sort -u | wc -l | tr -d ' ') ;;
+         *) c=$(rg -l --fixed-strings "$k" . --glob "!$f" 2>/dev/null | wc -l | tr -d ' ') ;;
+       esac
+     else
+       c=$(rg -l --fixed-strings "$n" . --glob "!$f" 2>/dev/null | wc -l | tr -d ' ')
+     fi
+     echo "$c $f"
+   done | sort -rn > /tmp/kref.txt
+   head -10 /tmp/kref.txt
+   ```
+
+   The moved orphan filter builds the trio pattern from `PROJECT_KNOWLEDGE`:
+
+   ```sh
+   TRIO=$(printf '%s' "$PKNOW" | sed 's/\./\\./g; s|<project>|.*|g')
+   awk '$1==0 {print $2}' /tmp/kref.txt \
+     | rg -v '[0-9]{2}-[0-9]{2}-[0-9]{4}_SOT\.md$' \
+     | rg -v '/(specs|adr)/' \
+     | rg -v "^$TRIO/(config|conventions|known-issues)\.md$" > /tmp/orphans.txt
+   wc -l < /tmp/orphans.txt
+   ```
+
    The trio becomes a finding only when the project's whole subtree is missing from the
    `INDEX.md` component map, which is what step 3 checks.
 
@@ -90,6 +147,22 @@ description: Measure the health of the hub's knowledge before curating it - whic
    done
    ```
 
+   On a moved layout, list project homes under `$PROOT` instead, check the INDEX
+   mentions each one that holds knowledge files, and report anything real below the
+   default paths as a stray home:
+
+   ```sh
+   KH=$(printf '%s' "$PKNOW" | rev | cut -d/ -f1 | rev)
+   case "$KH" in *'<'*) KH=knowledge ;; esac
+   find "$PROOT" -mindepth 1 -maxdepth 2 -type d -not -name "$KH" -not -name journal | while read -r d; do
+     [ -n "$(find "$d/$KH" -maxdepth 1 -name '*.md' -print -quit 2>/dev/null)" ] || continue
+     rg -q --fixed-strings "${d#$PROOT/}" INDEX.md \
+       || echo "PROJECT SUBTREE MISSING FROM INDEX: $d"
+   done
+   find knowledge/projects journal/projects -mindepth 2 -type d 2>/dev/null | sed 's/^/STRAY HOME AT AN OLD PATH: /'
+   find knowledge/projects journal/projects -type f 2>/dev/null | sed 's/^/STRAY FILE AT AN OLD PATH: /'
+   ```
+
 4. Grade the playbook against its own rules (R19).
 
    ```sh
@@ -108,6 +181,15 @@ description: Measure the health of the hub's knowledge before curating it - whic
    cutoff=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d '90 days ago' +%Y-%m-%d)
    rg -o '\[verified ([0-9]{4}-[0-9]{2}-[0-9]{2})\]' -r '$1' knowledge/ \
      | awk -F: -v c="$cutoff" '$2 < c {print "STALE " $2 "  " $1}' | sort -k2 | head -10
+   ```
+
+   On a moved layout, scan both homes:
+
+   ```sh
+   rg -c '\[inferred\]' knowledge/ "$PROOT"/ --glob '!**/journal/**' 2>/dev/null | sort -t: -k2 -rn > /tmp/inferred.txt
+   cutoff=$(date -v-90d +%Y-%m-%d 2>/dev/null || date -d '90 days ago' +%Y-%m-%d)
+   rg -o '\[verified ([0-9]{4}-[0-9]{2}-[0-9]{2})\]' -r '$1' knowledge/ "$PROOT"/ --glob '!**/journal/**' \
+     | awk -F: -v c="$cutoff" '$2 < c {print "STALE " $2 "  " $1}' | sort -k2 > /tmp/stale.txt
    ```
 
    Flag every `[inferred]` entry in a file whose subject the current session touched, and

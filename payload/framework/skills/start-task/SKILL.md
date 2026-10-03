@@ -21,7 +21,7 @@ description: Open (or resume) a per-task journal in the hub at the start of a no
 
 1. Resolve `HUB_WORKTREE` / `HUB_ROOT` from `INDEX.md`. Journals live at
    `<HUB_WORKTREE>/<HUB_ROOT>/journal/` (cross-project) or
-   `<HUB_WORKTREE>/<HUB_ROOT>/journal/projects/<project>/` (per-project, if that project
+   `<HUB_WORKTREE>/<HUB_ROOT>/<PROJECT_JOURNAL>/` (per-project, if that project
    has enough traffic).
 2. Check the journal dir for an existing journal for this task with status not `Done`.
    If found, **resume it** - never create a second (R4).

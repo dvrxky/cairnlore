@@ -29,7 +29,7 @@ description: Take a lesson, fact, fix, or convention discovered during a task an
 
 2. **Scope**: is it project-specific or cross-project?
    - Project-specific: destination is
-     `HUB_ROOT/knowledge/projects/<project>/<file>.md`.
+     `HUB_ROOT/<PROJECT_KNOWLEDGE>/<file>.md`.
    - Cross-project (applies to multiple <your-domain> projects, e.g. Kafka lag alarm patterns):
      destination is `HUB_ROOT/knowledge/<file>.md`. If no matching cross-project file
      exists, create one (R4 requires searching first - see step 3).

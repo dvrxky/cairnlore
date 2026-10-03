@@ -1,6 +1,6 @@
 ---
 name: bootstrap-project
-description: Seed a new project's subtree in the hub the first time the agent works on it. Creates knowledge/projects/<project>/{config,conventions,known-issues}.md from templates, fills config from the project's main clone (build tool, versions, entry points), and adds the project to the INDEX component map. Use when the user says "bootstrap project X", "add project X to the hub", "seed knowledge for X", or when working on a project that has no HUB_ROOT/knowledge/projects/X/ yet.
+description: Seed a new project's subtree in the hub the first time the agent works on it. Creates <PROJECT_KNOWLEDGE>/{config,conventions,known-issues}.md from templates, fills config from the project's main clone (build tool, versions, entry points), and adds the project to the INDEX component map. Use when the user says "bootstrap project X", "add project X to the hub", "seed knowledge for X", or when working on a project that has no HUB_ROOT/knowledge/projects/X/ yet.
 ---
 
 # Skill: Bootstrap a project into the hub
@@ -14,7 +14,7 @@ description: Seed a new project's subtree in the hub the first time the agent wo
 - **preconditions:**
   - The project's main code clone is checked out somewhere on disk and the user tells
     you (or you can verify) its absolute path.
-  - No `HUB_ROOT/knowledge/projects/<project>/` directory exists yet. If it does, refuse
+  - No `HUB_ROOT/<PROJECT_KNOWLEDGE>/` directory exists yet. If it does, refuse
     - the project is already bootstrapped; use the R3 loop to extend it, not this skill.
 
 ## Steps
@@ -27,7 +27,7 @@ description: Seed a new project's subtree in the hub the first time the agent wo
 
 2. **Create the subtree**:
    ```
-   HUB_ROOT/knowledge/projects/<project>/
+   HUB_ROOT/<PROJECT_KNOWLEDGE>/
      config.md
      conventions.md
      known-issues.md
@@ -56,15 +56,17 @@ description: Seed a new project's subtree in the hub the first time the agent wo
    - One-line project purpose.
    - Code repo path (main clone).
    - Bullet list of the knowledge files in this subtree.
-   - Journal home: `HUB_ROOT/journal/projects/<project>/` (create empty dir).
+   - Journal home: `HUB_ROOT/<PROJECT_JOURNAL>/` (create empty dir).
 
 6. **Add the project to `HUB_ROOT/INDEX.md`**:
    - Per-project knowledge table: one row with focus + trigger keywords.
    - Component map: one row with what it is, code-repo path, knowledge path, fallback.
 
-7. **Create the per-project journal directory** (empty) at
-   `HUB_ROOT/journal/projects/<project>/`. Copy `HUB_ROOT/journal/_template.md` there is
+7. **Create the per-project journal home** (empty) at
+   `HUB_ROOT/<PROJECT_JOURNAL>/`, beside `<PROJECT_KNOWLEDGE>`. Copy `HUB_ROOT/journal/_template.md` there is
    NOT required - journals are opened by `start-task` from the hub-root template.
+   When the hub keeps links at the default paths, create both links in the same step,
+   as relative links.
 
 8. **Do NOT touch the code repo.** No `.ai/`, no branch changes, no commits (R13).
 
@@ -72,14 +74,14 @@ description: Seed a new project's subtree in the hub the first time the agent wo
 
 ## Validation
 
-- `HUB_ROOT/knowledge/projects/<project>/` exists with `config.md`, `conventions.md`,
+- `HUB_ROOT/<PROJECT_KNOWLEDGE>/` exists with `config.md`, `conventions.md`,
   `known-issues.md`, `README.md`.
 - `config.md` has real facts cited `path:line` from the code repo (not placeholders).
 - `conventions.md` and `known-issues.md` are template stubs with a header explaining
   what belongs there.
 - `HUB_ROOT/INDEX.md` has the project registered in the per-project knowledge table AND
   the component map.
-- `HUB_ROOT/journal/projects/<project>/` exists (empty).
+- `HUB_ROOT/<PROJECT_JOURNAL>/` exists (empty).
 - No file was created inside the code repo.
 
 ## Guardrails

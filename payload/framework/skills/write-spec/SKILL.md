@@ -34,7 +34,7 @@ the spec first, then hand off to gate 2.
    ownership) does NOT go in the spec body. Each one gets its own ADR via `write-adr`.
    The spec links to them.
 
-4. **Write the spec** to `knowledge/projects/<project>/specs/<slug>.md` using the
+4. **Write the spec** to `<PROJECT_KNOWLEDGE>/specs/<slug>.md` using the
    structure below. Create the `specs/` directory if absent.
 
 5. **Confirm.** Show the user the spec path and the open questions that remain, if any.

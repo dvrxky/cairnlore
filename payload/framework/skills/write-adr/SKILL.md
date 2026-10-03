@@ -19,12 +19,12 @@ of how the framework evolved.
 
 ## Steps
 
-1. Determine the next number: list `knowledge/projects/<project>/adr/`, take the highest
+1. Determine the next number: list `<PROJECT_KNOWLEDGE>/adr/`, take the highest
    `NNN` and add one. Zero-pad to three digits.
 2. Name the decision in a single sentence. If you cannot, it is more than one decision.
 3. Capture the options that were genuinely considered, each with its real trade-off. An
    ADR with one option is not a decision, it is a note.
-4. Write to `knowledge/projects/<project>/adr/<NNN>-<slug>.md`.
+4. Write to `<PROJECT_KNOWLEDGE>/adr/<NNN>-<slug>.md`.
 5. Link the ADR from the spec that triggered it (`Related ADRs:` line).
 
 ## Template

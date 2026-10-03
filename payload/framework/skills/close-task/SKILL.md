@@ -13,13 +13,13 @@ description: Close an in-progress task journal in the hub. Fills Outcome, promot
 - **triggers:** close the task, close journal, wrap up the task, mark task done, finish the task, complete the task
 - **preconditions:**
   - There is an open task journal for the current work with status `In progress` under
-    `HUB_ROOT/journal/` or `HUB_ROOT/journal/projects/<project>/`.
+    `HUB_ROOT/journal/` or `HUB_ROOT/<PROJECT_JOURNAL>/`.
   - The task's implementation is genuinely finished; tests pass; no active TODOs remain
     (or they are recorded under "Open questions / TODO" for a follow-up).
 
 ## Steps
 
-1. Find the journal: search `HUB_ROOT/journal/` and `HUB_ROOT/journal/projects/*/` for a
+1. Find the journal: search `HUB_ROOT/journal/` and every `<PROJECT_JOURNAL>` for a
    journal with status `In progress` matching the current task's slug or link. If more
    than one candidate exists, ask the user which (R2, R4). If none exists, refuse - a
    task without a journal was never properly opened; use `start-task` first, or record
@@ -43,7 +43,7 @@ description: Close an in-progress task journal in the hub. Fills Outcome, promot
      line (the distilled trigger plus a pointer, never the detail).
    - DEMOTE, only past the soft target of 40 items: delete the lowest-value lines, `h:0`
      first. Never merge two lines into one: a merged line is vaguer than either (R19).
-5b. If this task had a spec at `knowledge/projects/<project>/specs/<slug>.md`, update its
+5b. If this task had a spec at `<PROJECT_KNOWLEDGE>/specs/<slug>.md`, update its
    `Status:` (usually to `implemented`) and reconcile any requirement that changed during
    implementation. If an architectural decision was made mid-flight and never recorded,
    write it now via `write-adr`.
