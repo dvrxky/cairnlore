@@ -1,6 +1,6 @@
 ---
 name: bootstrap-project
-description: Seed a new project's subtree in the hub the first time the agent works on it. Creates <PROJECT_KNOWLEDGE>/{config,conventions,known-issues}.md from templates, fills config from the project's main clone (build tool, versions, entry points), and adds the project to the INDEX component map. Use when the user says "bootstrap project X", "add project X to the hub", "seed knowledge for X", or when working on a project that has no HUB_ROOT/knowledge/projects/X/ yet.
+description: Seed a new project's subtree in the hub the first time the agent works on it. Creates <PROJECT_KNOWLEDGE>/{config,conventions,known-issues}.md from templates, fills config from the project's main clone (build tool, versions, entry points), and adds the project to the INDEX component map. Use when the user says "bootstrap project X", "add project X to the hub", "seed knowledge for X", or when working on a project that has no HUB_ROOT/<PROJECT_KNOWLEDGE>/ yet.
 ---
 
 # Skill: Bootstrap a project into the hub

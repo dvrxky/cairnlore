@@ -13,7 +13,7 @@ Refuse to write implementation steps in this skill. If the user pushes for a pla
 the spec first, then hand off to gate 2.
 
 - **triggers:** fires automatically (R22) on the `write-spec` trip-wire conditions in AGENTS.md section 13.2; no request needed
-- **preconditions:** the project has a subtree under `knowledge/projects/`; if not, run `bootstrap-project` first
+- **preconditions:** the project has a `<PROJECT_KNOWLEDGE>` home; if not, run `bootstrap-project` first
 
 ## Steps
 

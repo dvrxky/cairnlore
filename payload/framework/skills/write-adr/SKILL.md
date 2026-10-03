@@ -15,7 +15,7 @@ content, and R18 permits it: an ADR records a decision and its rationale, not a 
 of how the framework evolved.
 
 - **triggers:** fires automatically (R22) on the `write-adr` trip-wire conditions in AGENTS.md section 13.2; no request needed
-- **preconditions:** the project has a subtree under `knowledge/projects/`; if not, run `bootstrap-project` first
+- **preconditions:** the project has a `<PROJECT_KNOWLEDGE>` home; if not, run `bootstrap-project` first
 
 ## Steps
 

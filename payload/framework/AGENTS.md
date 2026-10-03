@@ -4,7 +4,7 @@
 > It is domain-agnostic: it says nothing about what you build, only how the agent
 > keeps a project's knowledge organized, cited, and self-updating.
 >
-> Version: v4.7.0 (Cairnlore)
+> Version: v4.7.1 (Cairnlore)
 
 The framework is centralized in a single shared hub repo (see section 10).
 
@@ -38,8 +38,8 @@ If a task journal is still In progress (section 11), load it too to restore that
 goal, answered clarifications, and lessons before continuing.
 
 If the hub INDEX has a "Pending upstream" table, run each row's shipped check against the
-engine on disk. Retire the rows that pass (R28). Every other row outranks the engine text it
-changes.
+engine on disk. Compare a passing row's entry with the engine before retiring it (R28);
+what has not shipped outranks the engine text it changes.
 
 ---
 
@@ -258,8 +258,10 @@ overwrite or outrank it until it ships. An engine change captured on a pull-only
 a pending entry: one file per capture in the hub's `upstream/` directory, listed in the hub
 INDEX "Pending upstream" table with a shipped check. The entry outranks the engine text it
 changes for every session on that hub. At session start, run each shipped check against the
-engine on disk; a pass retires the entry, and the retirement is named in the response. If
-the engine shipped a different version, keep the entry in force and quote both texts (R7).
+engine on disk. A pass shows that one edit shipped, not the whole entry: before
+retiring, compare the engine's change with the entry's paste block. Retire what shipped
+and name the retirement in the response. Whatever did not ship, or shipped differently,
+stays in force with both texts quoted (R7).
 
 ---
 
@@ -663,8 +665,8 @@ and run the skill in the same turn (R22).
   engine clone cannot push
 
 **Fire `bootstrap-project` when:**
-- you are about to write knowledge about a project with no subtree under
-  `knowledge/projects/`
+- you are about to write knowledge about a project with no `<PROJECT_KNOWLEDGE>`
+  home
 
 **Fire `start-task` when:**
 - work is about to span more than one turn or more than three steps, and no journal is
